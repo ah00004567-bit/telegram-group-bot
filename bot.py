@@ -32,15 +32,12 @@ async def check_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         user = update.effective_user
 
-        # لا تطبق العقوبة على البوتات
         if user and user.is_bot:
             return
 
         try:
-            # حذف الرسالة
             await message.delete()
 
-            # حظر العضو
             await context.bot.ban_chat_member(
                 chat_id=update.effective_chat.id,
                 user_id=user.id
@@ -64,8 +61,17 @@ def main():
         )
     )
 
+    port = int(os.environ.get("PORT", "10000"))
+    render_url = os.environ["RENDER_EXTERNAL_URL"]
+
     print("Bot is running...")
-    app.run_polling()
+
+    app.run_webhook(
+        listen="0.0.0.0",
+        port=port,
+        url_path="telegram",
+        webhook_url=f"{render_url}/telegram"
+    )
 
 
 if __name__ == "__main__":
